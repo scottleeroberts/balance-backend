@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  resources :game_events
   namespace :api do
     resources :games
+    resources :game_events, only: %i[create]
   end
 
   devise_for :users, path: 'api', path_names: {
@@ -14,4 +14,3 @@ Rails.application.routes.draw do
                        registrations: 'users/registrations'
                      }
 end
-
