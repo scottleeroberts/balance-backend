@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  resources :games
+  namespace :api do
+    resources :games
+  end
+
   devise_for :users, path: 'api', path_names: {
                                     sign_in: 'sessions',
                                     sign_out: 'sessions',
@@ -10,3 +13,4 @@ Rails.application.routes.draw do
                        registrations: 'users/registrations'
                      }
 end
+
