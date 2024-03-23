@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
+  get 'user/show'
   namespace :api do
     resources :games
     resources :game_events, only: %i[create]
+    get 'user', to: 'users#show', as: 'user'
   end
 
   devise_for :users, path: 'api', path_names: {

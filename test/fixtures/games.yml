@@ -1,11 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  name: MyString
-  url: MyString
-  category: 1
+  name: 'Math Game'
+  url: 'http://example.com/math_game'
+  category: 'math'
 
 two:
-  name: MyString
-  url: MyString
-  category: 1
+  name: 'Puzzle Game'
+  url: 'http://example.com/puzzle_game'
+  category: 'math'
