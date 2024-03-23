@@ -12,13 +12,12 @@ class GameEventTest < ActiveSupport::TestCase
     GameEvent.create!(ge_type: :completed, occurred_at: Date.yesterday, game: @game, user: @user)
     GameEvent.create!(ge_type: :completed, occurred_at: Date.today, game: @game, user: @user)
     @user.reload
-    assert_equal 1, @user.streak_days, 'User streak_days should be incremented'
+    assert_equal 2, @user.streak_days, 'User streak_days should be incremented'
   end
 
   test 'should reset streak_days to 1 when not played yesterday' do
     GameEvent.create!(ge_type: :completed, occurred_at: Date.today, game: @game, user: @user)
     @user.reload
-
     assert_equal 1, @user.streak_days, 'User streak_days should be reset to 1'
   end
 
@@ -29,6 +28,17 @@ class GameEventTest < ActiveSupport::TestCase
 
     @user.reload
 
-    assert_equal 1, @user.streak_days, 'User streak_days should not be incremented when played multiple times today'
+    assert_equal 2, @user.streak_days, 'User streak_days should not be incremented when played multiple times today'
+  end
+
+  test 'should continue streak when played on consecutive days' do
+    GameEvent.create!(ge_type: :completed, occurred_at: 3.days.ago, game: @game, user: @user)
+    GameEvent.create!(ge_type: :completed, occurred_at: 2.days.ago, game: @game, user: @user)
+    GameEvent.create!(ge_type: :completed, occurred_at: 1.day.ago, game: @game, user: @user)
+    GameEvent.create!(ge_type: :completed, occurred_at: Date.today, game: @game, user: @user)
+
+    @user.reload
+
+    assert_equal 3, @user.streak_days, 'User streak_days should continue when played on consecutive days'
   end
 end
