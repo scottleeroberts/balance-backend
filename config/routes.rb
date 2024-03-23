@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :game_events
   namespace :api do
     resources :games
   end
