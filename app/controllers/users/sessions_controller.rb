@@ -4,19 +4,28 @@ class Users::SessionsController < Devise::SessionsController
 
   private
 
-  def respond_with(current_user, _opts = {})
-    render json: {
-      status: {
-        code: 200, message: 'Logged in successfully.',
-        data: { user: UserSerializer.new(current_user).serializable_hash[:data][:attributes] }
-      }
-    }, status: :ok
+  def respond_with(resource, _opts = {})
+    if resource
+      # current_user is logged in successfully
+      render json: {
+        user: resource
+      }, status: :ok
+    else
+      # current_user is not logged in successfully
+      render json: {
+        messages: ['Invalid Email or Password.']
+      }, status: :unprocessable_entity
+    end
   end
 
   def respond_to_on_destroy
     if request.headers['Authorization'].present?
-      jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last,
-                               Rails.application.credentials.devise_jwt_secret_key!).first current_user = User.find(jwt_payload['sub'])
+      jwt_payload = JWT.decode(
+        request.headers['Authorization'].split(' ').last,
+        Rails.application.credentials.secret_key_base
+      ).first
+
+      current_user = User.find(jwt_payload['sub'])
     end
 
     if current_user
