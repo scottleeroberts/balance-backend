@@ -1,38 +1,19 @@
 require 'test_helper'
 
-class GamesControllerTest < ActionDispatch::IntegrationTest
+class Api::GamesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
-    @game = games(:one)
+    @user = users(:one)
+    sign_in @user
   end
 
   test 'should get index' do
-    get games_url, as: :json
+    get api_games_url
     assert_response :success
+
+    games_response = JSON.parse(response.body)['games']
+    assert_equal games(:two).as_json(only: %i[url name category]), games_response.first
+    assert_equal games(:one).as_json(only: %i[url name category]), games_response.second
   end
-
-  #   test "should create game" do
-  #     assert_difference("Game.count") do
-  #       post games_url, params: { game: { category: @game.category, name: @game.name, url: @game.url } }, as: :json
-  #     end
-
-  #     assert_response :created
-  #   end
-
-  #   test "should show game" do
-  #     get game_url(@game), as: :json
-  #     assert_response :success
-  #   end
-
-  #   test "should update game" do
-  #     patch game_url(@game), params: { game: { category: @game.category, name: @game.name, url: @game.url } }, as: :json
-  #     assert_response :success
-  #   end
-
-  #   test "should destroy game" do
-  #     assert_difference("Game.count", -1) do
-  #       delete game_url(@game), as: :json
-  #     end
-
-  #     assert_response :no_content
-  #   end
 end

@@ -5,7 +5,9 @@ class Api::GamesController < ApplicationController
   def index
     @games = Game.all
 
-    render json: { "games": @games }
+    render json: {
+      "games": @games.as_json(only: %i[url name category])
+    }
   end
 
   # # GET /games/1
