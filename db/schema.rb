@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_23_194931) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_23_202046) do
   create_table "game_events", force: :cascade do |t|
     t.integer "ge_type", default: 0
     t.datetime "occurred_at"
     t.integer "game_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["game_id"], name: "index_game_events_on_game_id"
+    t.index ["user_id"], name: "index_game_events_on_user_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -45,4 +47,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_23_194931) do
   end
 
   add_foreign_key "game_events", "games"
+  add_foreign_key "game_events", "users"
 end

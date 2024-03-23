@@ -1,43 +1,34 @@
 require 'test_helper'
 
 class Api::GameEventsControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    @game_event = game_events(:one)
-  end
+  include Devise::Test::IntegrationHelpers
 
-  # test "should get index" do
-  #   get game_events_url, as: :json
-  #   assert_response :success
-  # end
+  setup do
+    @user = users(:one)
+    sign_in @user
+
+    @game = Game.create(name: Faker::Game.title, url: Faker::Internet.url, category: 'math')
+  end
 
   test 'should create game_event' do
     assert_difference('GameEvent.count') do
-      post game_events_url,
-           params: { game_event: {
-             type: 'completed',
-             game_id: @game_event.game_id,
-             occurred_at: @game_event.occurred_at
-           } }, as: :json
+      post api_game_events_url,
+           params: { game_event: { type: 'completed', occurred_at: Time.current, game_id: @game.id } }
     end
 
-    assert_response :created
+    assert_response :success
+
+    game_event_response = JSON.parse(response.body)['game_event']
+    assert_equal 'completed', game_event_response['type']
+    assert_equal @game.id, game_event_response['game_id']
+    assert_equal @user.id, game_event_response['user_id']
   end
 
-  # test "should show game_event" do
-  #   get game_event_url(@game_event), as: :json
-  #   assert_response :success
-  # end
+  test 'should not create game_event with invalid data' do
+    assert_no_difference('GameEvent.count') do
+      post api_game_events_url, params: { game_event: { type: '', occurred_at: nil, game_id: nil } }
+    end
 
-  # test "should update game_event" do
-  #   patch game_event_url(@game_event), params: { game_event: { game_id: @game_event.game_id, occurred_at: @game_event.occurred_at, type: @game_event.type } }, as: :json
-  #   assert_response :success
-  # end
-
-  # test "should destroy game_event" do
-  #   assert_difference("GameEvent.count", -1) do
-  #     delete game_event_url(@game_event), as: :json
-  #   end
-
-  #   assert_response :no_content
-  # end
+    assert_response :unprocessable_entity
+  end
 end

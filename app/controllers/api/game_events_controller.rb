@@ -1,4 +1,5 @@
 class Api::GameEventsController < ApplicationController
+  before_action :authenticate_user!
   # before_action :set_game_event, only: %i[show update destroy]
 
   # # GET /game_events
@@ -15,10 +16,16 @@ class Api::GameEventsController < ApplicationController
 
   # POST /game_events
   def create
-    @game_event = GameEvent.new(game_event_params.except(:type))
+    @game_event = GameEvent.new(game_event_params.except(:type).merge(user: current_user))
 
     if @game_event.save
-      render json: { "game_event": @game_event.as_json(methods: [:type], only: %i[id occurred_at type game_id]) }
+      render json: {
+        "game_event":
+          @game_event.as_json(
+            methods: [:type],
+            only: %i[id occurred_at type game_id user_id]
+          )
+      }
     else
       render json: @game_event.errors, status: :unprocessable_entity
     end
