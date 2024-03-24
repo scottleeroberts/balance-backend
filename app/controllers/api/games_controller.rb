@@ -6,7 +6,7 @@ class Api::GamesController < ApplicationController
     @games = Game.all
 
     render json: {
-      "games": @games.as_json(only: %i[url name category])
+      "games": @games.as_json(only: %i[id url name category])
     }
   end
 
